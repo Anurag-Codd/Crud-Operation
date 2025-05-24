@@ -7,7 +7,7 @@ import { Model } from 'mongoose';
 export class PostService {
   constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
 
-  async allPost(): Promise<{ message: string; posts: unknown[] }> {
+  async allPost(): Promise<{ message: string; posts: Post[] }> {
     const allPosts = await this.postModel.find({}).lean();
 
     if (allPosts.length <= 0) {
@@ -15,8 +15,21 @@ export class PostService {
     }
 
     return {
-      message: 'Post fetched Successfully',
+      message: 'Posts fetched Successfully',
       posts: allPosts,
+    };
+  }
+
+  async singlePost(id: string): Promise<{ message: string; post: Post }> {
+    const Post = await this.postModel.findById(id);
+
+    if (!Post) {
+      throw new NotFoundException('Post not Found');
+    }
+
+    return {
+      message: 'A Post is Fetched',
+      post: Post,
     };
   }
 }
